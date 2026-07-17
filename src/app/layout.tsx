@@ -20,18 +20,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
-        <header className="site-header">
+        <nav className="nav">
           <div className="wrap">
-            <div className="brand">
-              <Link href="/"><h1>قانونك</h1></Link>
-              <span className="mono">/ UK law, in Arabic</span>
+            <Link href="/" className="nav-brand">قانونك</Link>
+            <div className="nav-links">
+              <Link href="/">الرئيسية</Link>
+              <Link href="/#cats">الفئات</Link>
+              <Link href="/#results">كل المواضيع</Link>
             </div>
-            <p className="tag">
-              القوانين البريطانية مشروحة بالعربية بطريقة بسيطة — ومع كل موضوع رابط المصدر الرسمي
-              من مواقع الحكومة البريطانية، وتاريخ آخر مراجعة.
-            </p>
+            <form className="nav-search" action="/" method="get" role="search">
+              <input type="search" name="q" placeholder="ابحث…" aria-label="ابحث في المواضيع" />
+              <button type="submit" aria-label="بحث">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <circle cx="11" cy="11" r="7" />
+                  <line x1="21" y1="21" x2="16.5" y2="16.5" />
+                </svg>
+              </button>
+            </form>
           </div>
-        </header>
+        </nav>
 
         <div className="disclaimer">
           <div className="wrap">

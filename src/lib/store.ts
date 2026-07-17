@@ -80,7 +80,14 @@ export async function recordVote(
     if (prev) counts[prev] = Math.max(0, counts[prev] - 1);
     if (vote) counts[vote] += 1;
     fb[articleId] = counts;
-    await writeJsonAtomic(FEEDBACK, fb);
+    try {
+      await writeJsonAtomic(FEEDBACK, fb);
+    } catch (err) {
+      // على خادم دائم (VPS) تُحفظ التقييمات عادةً. أما على أنظمة ملفات للقراءة فقط
+      // (مثل Vercel) فقد يفشل الحفظ — لا نُسقط الطلب، بل نُعيد العدّ المحسوب.
+      // لحفظ دائم على Vercel: انقل هذه الدالة إلى Vercel KV/Postgres (انظر CLAUDE.md).
+      console.warn('recordVote: تعذّر حفظ التقييم (نظام ملفات للقراءة فقط؟)', err);
+    }
     return fb;
   });
 }
