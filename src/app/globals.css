@@ -1,0 +1,203 @@
+:root {
+  --ink: #0c2b23;
+  --sign: #006747;
+  --sign-dim: #4a8c78;
+  --paper: #f1f3f0;
+  --alert: #b4132b;
+  --amber: #8a6100;
+  --line: rgba(12, 43, 35, 0.14);
+  --r: 14px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  line-height: 1.8;
+}
+.mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; direction: ltr; unicode-bidi: isolate; }
+.wrap { max-width: 860px; margin: 0 auto; padding: 0 18px; }
+a { color: inherit; }
+button { font-family: inherit; }
+
+/* لوحة الإشارة */
+.plate {
+  background: var(--sign); color: #fff; border-radius: var(--r);
+  box-shadow: inset 0 0 0 2px var(--sign), inset 0 0 0 4px rgba(255, 255, 255, 0.85);
+  padding: 14px 16px; display: block; text-decoration: none; cursor: pointer; border: 0;
+  text-align: right; width: 100%;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.plate:hover, .plate:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: inset 0 0 0 2px var(--sign), inset 0 0 0 4px #fff, 0 10px 24px rgba(12, 43, 35, 0.2);
+  outline: none;
+}
+.plate.off { background: #fff; color: var(--ink); box-shadow: inset 0 0 0 1px var(--line); }
+.plate.off:hover, .plate.off:focus-visible { box-shadow: inset 0 0 0 1.5px var(--sign); }
+
+/* الترويسة */
+.site-header { background: var(--ink); color: #fff; padding: 34px 0 36px; position: relative; overflow: hidden; }
+.site-header::after {
+  content: ''; position: absolute; inset-inline-start: -60px; top: -60px; width: 260px; height: 260px;
+  border: 2px dashed rgba(255, 255, 255, 0.08); border-radius: 50%; pointer-events: none;
+  animation: spin 90s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.brand { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.brand h1 { font-family: 'Readex Pro', sans-serif; font-weight: 700; font-size: 30px; letter-spacing: -0.5px; }
+.brand a { text-decoration: none; }
+.brand span { color: var(--sign-dim); font-size: 13px; }
+.tag { margin-top: 10px; color: #c9d6d1; font-weight: 300; font-size: 15.5px; max-width: 52ch; }
+.stats { display: flex; gap: 22px; margin-top: 18px; flex-wrap: wrap; }
+.stat b { font-family: 'Readex Pro', sans-serif; font-size: 22px; font-weight: 600; color: #fff; }
+.stat span { display: block; font-size: 12px; color: #8fa6a0; }
+.search { margin-top: 20px; display: flex; background: #fff; border-radius: var(--r); overflow: hidden; }
+.search input { flex: 1; border: 0; padding: 14px 16px; font: 400 15px/1.6 'IBM Plex Sans Arabic', sans-serif; color: var(--ink); background: transparent; }
+.search input:focus { outline: 3px solid var(--sign); outline-offset: -3px; }
+.search input::placeholder { color: #7c8a85; }
+
+/* شريط التنبيه */
+.disclaimer { background: #fff6da; border-bottom: 1px solid rgba(138, 97, 0, 0.3); color: var(--amber); font-size: 13.5px; padding: 11px 0; font-weight: 500; }
+.disclaimer .wrap { display: flex; gap: 9px; align-items: flex-start; }
+
+/* الأقسام */
+section { padding: 32px 0 4px; }
+.eyebrow {
+  font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--sign); margin-bottom: 13px; direction: ltr; text-align: right;
+  display: flex; justify-content: flex-end; align-items: center; gap: 10px;
+}
+.eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+.cats { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+.cat-name { font-family: 'Readex Pro', sans-serif; font-weight: 500; font-size: 15px; }
+.cat-count { font-size: 12px; opacity: 0.75; margin-top: 2px; }
+
+/* الأكثر شيوعاً */
+.pop-row { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(240px, 1fr); gap: 10px; overflow-x: auto; padding-bottom: 8px; scroll-snap-type: x mandatory; }
+.pop-row::-webkit-scrollbar { height: 6px; }
+.pop-row::-webkit-scrollbar-thumb { background: var(--line); border-radius: 99px; }
+.pop {
+  scroll-snap-align: start; background: linear-gradient(150deg, var(--sign) 0%, #004d35 100%); color: #fff;
+  border-radius: var(--r); padding: 15px 16px; cursor: pointer; border: 0; text-align: right;
+  text-decoration: none; display: flex; gap: 12px; align-items: center;
+  box-shadow: inset 0 0 0 4px rgba(255, 255, 255, 0.5); transition: transform 0.18s;
+}
+.pop:hover, .pop:focus-visible { transform: translateY(-2px); outline: none; }
+.pop .k { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.12em; opacity: 0.75; direction: ltr; display: block; text-align: right; }
+.pop h3 { font-family: 'Readex Pro', sans-serif; font-weight: 500; font-size: 14.5px; line-height: 1.55; margin-top: 4px; }
+
+/* البطاقات */
+.card {
+  background: #fff; border-radius: var(--r); padding: 16px 18px; margin-bottom: 10px;
+  border: 1px solid var(--line); cursor: pointer; text-decoration: none;
+  display: flex; gap: 14px; align-items: flex-start;
+  transition: border-color 0.15s, transform 0.3s ease, opacity 0.4s ease;
+}
+.card.reveal { opacity: 0; transform: translateY(12px); }
+.card.shown { opacity: 1; transform: none; }
+.card:hover, .card:focus-visible { border-color: var(--sign); outline: none; }
+.card h3 { font-family: 'Readex Pro', sans-serif; font-weight: 500; font-size: 17px; line-height: 1.55; }
+.card p { font-size: 14px; color: #4a5c57; font-weight: 300; margin-top: 4px; }
+.card .meta { margin-top: 9px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.chip { font-size: 11px; padding: 3px 9px; border-radius: 99px; background: var(--paper); color: #4a5c57; border: 1px solid var(--line); }
+.chip.new { background: #e4f2ec; color: var(--sign); border-color: transparent; font-weight: 500; }
+.chip.hot { background: var(--ink); color: #fff; border-color: transparent; font-weight: 500; }
+.empty { color: #5f706b; font-weight: 300; padding: 22px 0; }
+
+/* صور المواضيع */
+.topic-art-card, .topic-img-card { width: 56px; height: 56px; flex: 0 0 56px; border-radius: 12px; object-fit: cover; }
+.topic-art-hero, .topic-img-hero { width: 84px; height: 84px; border-radius: 16px; object-fit: cover; }
+.pop .topic-art-card, .pop .topic-img-card { width: 44px; height: 44px; flex: 0 0 44px; }
+
+/* صفحة المقال */
+.doc-top { background: var(--ink); color: #fff; padding: 26px 0; }
+.doc-top .crumbs { font-size: 12px; color: var(--sign-dim); margin-bottom: 10px; }
+.doc-top .crumbs a { text-decoration: none; }
+.doc-top h2 { font-family: 'Readex Pro', sans-serif; font-weight: 600; font-size: 24px; line-height: 1.55; }
+.doc-hero { display: flex; gap: 16px; align-items: center; }
+.doc-body { padding: 8px 0 30px; animation: rise 0.32s cubic-bezier(0.2, 0.8, 0.3, 1); }
+@keyframes rise { from { transform: translateY(16px); opacity: 0; } to { transform: none; opacity: 1; } }
+.doc-body h4 { font-family: 'Readex Pro', sans-serif; font-size: 14px; font-weight: 600; margin: 24px 0 8px; color: var(--sign); }
+.doc-body p { font-size: 15.5px; margin-bottom: 10px; }
+.doc-body li { font-size: 15px; margin: 6px 0; }
+ul { padding-inline-start: 20px; }
+.penalty { background: #fdeef0; border-inline-start: 3px solid var(--alert); padding: 12px 14px; border-radius: 8px; color: #7a0d1d; font-size: 14.5px; }
+.terms { display: grid; gap: 6px; }
+.term { display: flex; justify-content: space-between; gap: 12px; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; font-size: 14px; }
+.term b { font-family: 'IBM Plex Mono', monospace; font-weight: 500; font-size: 13px; color: var(--sign); direction: ltr; text-align: left; }
+
+/* بطاقة المصدر */
+.source { margin-top: 26px; background: #fff; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.source-head {
+  background: repeating-linear-gradient(45deg, #f1f3f0, #f1f3f0 6px, #e9ece8 6px, #e9ece8 12px);
+  padding: 9px 14px; font-size: 11.5px; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--sign); border-bottom: 1px solid var(--line);
+  display: flex; justify-content: space-between; direction: ltr;
+}
+.source-body { padding: 14px; }
+.source-body a { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; direction: ltr; color: var(--ink); word-break: break-all; text-decoration: none; border-bottom: 1px dotted var(--sign); padding-bottom: 2px; }
+.source-body a:hover { color: var(--sign); }
+.src-row { display: flex; gap: 8px; margin-top: 11px; flex-wrap: wrap; font-size: 12px; color: #5f706b; }
+.dot { width: 7px; height: 7px; border-radius: 99px; background: var(--sign); display: inline-block; align-self: center; }
+
+/* التقييم */
+.vote { margin-top: 22px; background: #fff; border: 1px solid var(--line); border-radius: var(--r); padding: 16px; text-align: center; }
+.vote h5 { font-family: 'Readex Pro', sans-serif; font-weight: 500; font-size: 15px; }
+.vote-btns { display: flex; justify-content: center; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
+.vbtn {
+  border: 1.5px solid var(--line); background: var(--paper); border-radius: 99px;
+  padding: 9px 22px; font: 500 14px/1.5 'IBM Plex Sans Arabic'; cursor: pointer; color: var(--ink);
+  display: flex; align-items: center; gap: 7px;
+  transition: transform 0.15s, border-color 0.15s, background 0.15s;
+}
+.vbtn:hover { border-color: var(--sign); }
+.vbtn.on-up { background: #e4f2ec; border-color: var(--sign); color: var(--sign); }
+.vbtn.on-down { background: #fdeef0; border-color: var(--alert); color: var(--alert); }
+.vbtn:active { transform: scale(0.94); }
+.vbtn.pulse { animation: pulse 0.45s ease; }
+@keyframes pulse { 0% { transform: scale(1); } 40% { transform: scale(1.12); } 100% { transform: scale(1); } }
+.vote-note { font-size: 12px; color: #5f706b; margin-top: 10px; font-weight: 300; }
+.legal-note { font-size: 12.5px; color: #5f706b; font-weight: 300; margin-top: 18px; line-height: 1.75; }
+
+.site-footer { margin-top: 44px; border-top: 1px solid var(--line); padding: 24px 0 30px; font-size: 12.5px; color: #5f706b; font-weight: 300; }
+.site-footer .foot-brand { font-family: 'Readex Pro', sans-serif; font-weight: 600; color: var(--ink); font-size: 15px; margin-bottom: 6px; }
+
+/* لوحة التحكم */
+.admin-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: var(--r); overflow: hidden; border: 1px solid var(--line); }
+.admin-table th { background: var(--ink); color: #fff; font-size: 12.5px; padding: 10px 12px; text-align: right; font-weight: 500; }
+.admin-table td { padding: 10px 12px; border-top: 1px solid var(--line); font-size: 13.5px; }
+.admin-table tr:hover td { background: var(--paper); }
+.btn {
+  display: inline-block; background: var(--sign); color: #fff; border: 0; border-radius: 10px;
+  padding: 10px 20px; font: 500 14px/1.5 'IBM Plex Sans Arabic'; cursor: pointer; text-decoration: none;
+  transition: transform 0.15s, opacity 0.15s;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn.ghost { background: transparent; color: var(--sign); border: 1.5px solid var(--sign); }
+.btn.danger { background: var(--alert); }
+.field { display: block; margin-bottom: 14px; }
+.field span { display: block; font-size: 13px; font-weight: 500; margin-bottom: 5px; }
+.field small { display: block; font-size: 11.5px; color: #5f706b; margin-top: 3px; font-weight: 300; }
+.field input, .field textarea, .field select {
+  width: 100%; border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 12px;
+  font: 400 14px/1.7 'IBM Plex Sans Arabic'; background: #fff; color: var(--ink);
+}
+.field input:focus, .field textarea:focus, .field select:focus { outline: none; border-color: var(--sign); }
+.field textarea { min-height: 120px; resize: vertical; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+.form-grid .full { grid-column: 1 / -1; }
+.notice { padding: 10px 14px; border-radius: 10px; font-size: 13.5px; margin-bottom: 14px; }
+.notice.ok { background: #e4f2ec; color: var(--sign); }
+.notice.err { background: #fdeef0; color: var(--alert); }
+
+@media (max-width: 560px) {
+  .brand h1 { font-size: 24px; }
+  .form-grid { grid-template-columns: 1fr; }
+  .topic-art-card, .topic-img-card { width: 44px; height: 44px; flex-basis: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .card.reveal { opacity: 1; transform: none; }
+}
