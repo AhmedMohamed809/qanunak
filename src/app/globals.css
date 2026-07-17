@@ -102,7 +102,8 @@ h1, h2, h3, h4, h5 { font-family: 'Cairo', sans-serif; }
 /* ---------- البحث ---------- */
 .search {
   margin-top: 26px; display: flex; align-items: center; gap: 12px;
-  background: #fff; border: 1px solid var(--line-strong); border-radius: var(--r); padding: 0 18px;
+  background: #fff; border: 1px solid var(--line-strong); border-radius: var(--r);
+  padding-inline-start: 18px; padding-inline-end: 6px;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 .search:focus-within { border-color: var(--sign); box-shadow: 0 0 0 4px var(--sign-soft); }
@@ -116,6 +117,14 @@ h1, h2, h3, h4, h5 { font-family: 'Cairo', sans-serif; }
 }
 .search input:focus { outline: none; }
 .search input::placeholder { color: #98a19c; }
+.search-btn {
+  flex: 0 0 auto; border: 0; background: var(--sign); color: #fff;
+  font: 700 14.5px/1 'Cairo', sans-serif; padding: 13px 26px; border-radius: var(--r-sm);
+  cursor: pointer; margin: 6px; transition: background 0.15s, transform 0.12s;
+}
+.search-btn:hover { background: var(--sign-deep); }
+.search-btn:active { transform: scale(0.97); }
+.search-btn:focus-visible { outline: 2px solid var(--sign-deep); outline-offset: 2px; }
 
 /* ---------- الأقسام ---------- */
 section { padding: 40px 0 0; }
@@ -278,6 +287,8 @@ ul { padding-inline-start: 22px; }
   .stats { gap: 26px; }
   .form-grid { grid-template-columns: 1fr; }
   .topic-art-card, .topic-img-card { width: 50px; height: 50px; flex-basis: 50px; }
+  .search-btn { padding: 12px 16px; }
+  .search { padding-inline-start: 14px; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

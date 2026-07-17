@@ -140,7 +140,14 @@ export default function HomeClient({
             </div>
           </div>
 
-          <div className="search">
+          <form
+            className="search"
+            role="search"
+            onSubmit={(e) => {
+              e.preventDefault();
+              listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }}
+          >
             <input
               type="search"
               value={q}
@@ -148,7 +155,8 @@ export default function HomeClient({
               placeholder="ابحث… مثال: رخصة قيادة، إيجار، لجوء، Universal Credit"
               aria-label="بحث في المواضيع"
             />
-          </div>
+            <button type="submit" className="search-btn">بحث</button>
+          </form>
         </section>
 
         <section>
