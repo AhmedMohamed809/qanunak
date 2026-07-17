@@ -2,6 +2,7 @@
   --ink: #0c2b23;
   --sign: #006747;
   --sign-dim: #4a8c78;
+  --sign-bright: #43c59e;
   --paper: #f1f3f0;
   --alert: #b4132b;
   --amber: #8a6100;
@@ -50,8 +51,19 @@ button { font-family: inherit; }
 .brand a { text-decoration: none; }
 .brand span { color: var(--sign-dim); font-size: 13px; }
 .tag { margin-top: 10px; color: #c9d6d1; font-weight: 300; font-size: 15.5px; max-width: 52ch; }
-.stats { display: flex; gap: 22px; margin-top: 18px; flex-wrap: wrap; }
-.stat b { font-family: 'Readex Pro', sans-serif; font-size: 22px; font-weight: 600; color: #fff; }
+.stats { display: flex; gap: 12px; margin-top: 18px; flex-wrap: wrap; }
+.stat {
+  display: flex; align-items: center; gap: 11px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 12px; padding: 10px 15px 10px 12px;
+}
+.stat-ic {
+  width: 36px; height: 36px; flex: 0 0 36px; display: grid; place-items: center;
+  border-radius: 10px; background: rgba(67, 197, 158, 0.16); color: var(--sign-bright);
+}
+.stat-ic svg { width: 19px; height: 19px; }
+.stat b { font-family: 'Readex Pro', sans-serif; font-size: 22px; font-weight: 600; color: var(--sign-bright); display: block; line-height: 1.15; }
 .stat span { display: block; font-size: 12px; color: #8fa6a0; }
 .search { margin-top: 20px; display: flex; background: #fff; border-radius: var(--r); overflow: hidden; }
 .search input { flex: 1; border: 0; padding: 14px 16px; font: 400 15px/1.6 'IBM Plex Sans Arabic', sans-serif; color: var(--ink); background: transparent; }
@@ -70,6 +82,8 @@ section { padding: 32px 0 4px; }
   display: flex; justify-content: flex-end; align-items: center; gap: 10px;
 }
 .eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+.eyebrow-ic { display: inline-flex; align-items: center; color: var(--sign); }
+.eyebrow-ic svg { width: 16px; height: 16px; }
 .cats { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
 .cat-name { font-family: 'Readex Pro', sans-serif; font-weight: 500; font-size: 15px; }
 .cat-count { font-size: 12px; opacity: 0.75; margin-top: 2px; }

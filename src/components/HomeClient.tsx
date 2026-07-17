@@ -7,6 +7,51 @@ import TopicArt from './TopicArt';
 
 const plural = (n: number) => (n === 1 ? 'موضوع واحد' : n === 2 ? 'موضوعان' : `${n} مواضيع`);
 
+/* أيقونات أصلية بسيطة (خط موحّد، تَرِث اللون) */
+const Icons = {
+  topics: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" />
+      <rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" />
+    </svg>
+  ),
+  categories: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+    </svg>
+  ),
+  helped: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M7 11v9H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1z" />
+      <path d="M7 11l4-7a2 2 0 0 1 2.7 2.6L12.5 10H19a2 2 0 0 1 2 2.3l-1.1 6A2 2 0 0 1 17.9 20H7" />
+    </svg>
+  ),
+  hot: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 3s5 4 5 9a5 5 0 0 1-10 0c0-1.4.6-2.7 1.4-3.7C9 10 9.5 11 10 11.5 10 9 11 5 12 3z" />
+    </svg>
+  ),
+  grid: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="6" cy="6" r="2.4" /><circle cx="18" cy="6" r="2.4" />
+      <circle cx="6" cy="18" r="2.4" /><circle cx="18" cy="18" r="2.4" />
+    </svg>
+  ),
+  list: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="9" y1="6" x2="20" y2="6" /><line x1="9" y1="12" x2="20" y2="12" /><line x1="9" y1="18" x2="20" y2="18" />
+      <circle cx="4.5" cy="6" r="1.2" fill="currentColor" stroke="none" />
+      <circle cx="4.5" cy="12" r="1.2" fill="currentColor" stroke="none" />
+      <circle cx="4.5" cy="18" r="1.2" fill="currentColor" stroke="none" />
+    </svg>
+  ),
+  search: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="11" cy="11" r="7" /><line x1="21" y1="21" x2="16.5" y2="16.5" />
+    </svg>
+  ),
+};
+
 function CountUp({ target }: { target: number }) {
   const [n, setN] = useState(0);
   useEffect(() => {
@@ -64,9 +109,18 @@ export default function HomeClient({ content, feedback }: { content: ContentFile
     <>
       <div className="wrap">
         <div className="stats" style={{ marginTop: 22 }}>
-          <div className="stat"><CountUp target={articles.length} /><span>موضوعاً</span></div>
-          <div className="stat"><CountUp target={categories.length} /><span>فئات</span></div>
-          <div className="stat"><CountUp target={totalHelped} /><span>قالوا «أفادتني»</span></div>
+          <div className="stat">
+            <span className="stat-ic">{Icons.topics}</span>
+            <div><CountUp target={articles.length} /><span>موضوعاً</span></div>
+          </div>
+          <div className="stat">
+            <span className="stat-ic">{Icons.categories}</span>
+            <div><CountUp target={categories.length} /><span>فئات</span></div>
+          </div>
+          <div className="stat">
+            <span className="stat-ic">{Icons.helped}</span>
+            <div><CountUp target={totalHelped} /><span>قالوا «أفادتني»</span></div>
+          </div>
         </div>
         <div className="search" style={{ marginTop: 18 }}>
           <input
@@ -79,7 +133,7 @@ export default function HomeClient({ content, feedback }: { content: ContentFile
         </div>
 
         <section>
-          <div className="eyebrow">الأكثر شيوعاً / Most asked</div>
+          <div className="eyebrow"><span className="eyebrow-ic">{Icons.hot}</span>الأكثر شيوعاً / Most asked</div>
           <div className="pop-row">
             {articles.filter((a) => a.hot).map((a) => (
               <Link key={a.id} href={`/law/${a.id}`} className="pop">
@@ -94,7 +148,7 @@ export default function HomeClient({ content, feedback }: { content: ContentFile
         </section>
 
         <section>
-          <div className="eyebrow">الفئات / Categories</div>
+          <div className="eyebrow"><span className="eyebrow-ic">{Icons.grid}</span>الفئات / Categories</div>
           <div className="cats">
             {categories.map((c) => {
               const n = articles.filter((a) => a.cat === c.id).length;
@@ -114,6 +168,7 @@ export default function HomeClient({ content, feedback }: { content: ContentFile
 
         <section>
           <div className="eyebrow">
+            <span className="eyebrow-ic">{cat ? Icons.grid : q ? Icons.search : Icons.list}</span>
             {cat ? catName(cat) : q ? 'نتائج البحث' : 'كل المواضيع'}
           </div>
           <div ref={listRef}>
