@@ -71,10 +71,12 @@ export default function HomeClient({
   content,
   feedback,
   initialQ = '',
+  totalHelped,
 }: {
   content: ContentFile;
   feedback: FeedbackFile;
   initialQ?: string;
+  totalHelped: number;
 }) {
   const { categories, articles } = content;
   const [q, setQ] = useState(initialQ);
@@ -111,7 +113,6 @@ export default function HomeClient({
     return () => io.disconnect();
   }, [rows]);
 
-  const totalHelped = Object.values(feedback).reduce((s, f) => s + f.up, 0);
 
   return (
     <>

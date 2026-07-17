@@ -40,12 +40,19 @@ Copy `.env.example` to `.env` and set `ADMIN_PASSWORD` + a long random `ADMIN_SE
 
 ## Deployment note
 The JSON file store works locally and on any persistent server (VPS). Vercel's
-filesystem is ephemeral, so **feedback** (👍/👎 counts) is stored in **Vercel KV
-(Upstash Redis)** when `KV_REST_API_URL` + `KV_REST_API_TOKEN` are present — set
-automatically once a KV store is connected to the project. Without them,
-`store.ts` falls back to `content/feedback.json` (fine locally/VPS; resets on
-Vercel). Article content is still file-based (read-only bundle → reads fine on
-Vercel; edits via the admin need a persistent host or a similar KV/DB port).
+filesystem is ephemeral, so **feedback** (👍/👎 counts) uses, in order:
+1. **Vercel KV (Upstash Redis)** when `KV_REST_API_URL` + `KV_REST_API_TOKEN`
+   are present (set automatically once a KV store is connected) — private, full
+   up/down, homepage per-card counts.
+2. Else on Vercel (`process.env.VERCEL`), a **zero-config free counter**
+   (Abacus, `abacus.jasoncameron.dev`) so "قالوا أفادتني" works with no setup —
+   one-way "helpful" increments only (no decrement), homepage shows the global
+   total via `getTotalHelped()`, per-card counts are omitted.
+3. Else (local/VPS) `content/feedback.json`.
+Voting is one-way (VoteButtons locks after one click). `store.ts` exposes
+`getFeedback`, `getTotalHelped`, `getArticleFeedback`, `recordVote`. Article
+content is still file-based (read-only bundle → reads fine on Vercel; admin
+edits need a persistent host or a KV/DB port).
 
 ## Roadmap ideas
 - English mirror pages for SEO; FAQPage JSON-LD
