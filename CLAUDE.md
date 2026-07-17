@@ -40,8 +40,12 @@ Copy `.env.example` to `.env` and set `ADMIN_PASSWORD` + a long random `ADMIN_SE
 
 ## Deployment note
 The JSON file store works locally and on any persistent server (VPS). Vercel's
-filesystem is ephemeral: before deploying there, port `src/lib/store.ts` to
-Vercel Postgres (or KV) — same function signatures, storage only.
+filesystem is ephemeral, so **feedback** (👍/👎 counts) is stored in **Vercel KV
+(Upstash Redis)** when `KV_REST_API_URL` + `KV_REST_API_TOKEN` are present — set
+automatically once a KV store is connected to the project. Without them,
+`store.ts` falls back to `content/feedback.json` (fine locally/VPS; resets on
+Vercel). Article content is still file-based (read-only bundle → reads fine on
+Vercel; edits via the admin need a persistent host or a similar KV/DB port).
 
 ## Roadmap ideas
 - English mirror pages for SEO; FAQPage JSON-LD
