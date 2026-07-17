@@ -206,6 +206,40 @@ ul { padding-inline-start: 20px; }
 .notice.ok { background: #e4f2ec; color: var(--sign); }
 .notice.err { background: #fdeef0; color: var(--alert); }
 
+/* ===== حركات وتفاعل ===== */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+/* دخول عناصر الترويسة والإحصاءات بتدرّج لطيف */
+.site-header .brand { animation: fadeUp 0.6s cubic-bezier(0.2, 0.8, 0.3, 1) both; }
+.site-header .tag { animation: fadeUp 0.6s cubic-bezier(0.2, 0.8, 0.3, 1) 0.12s both; }
+.stats { animation: fadeUp 0.6s cubic-bezier(0.2, 0.8, 0.3, 1) 0.24s both; }
+.search { animation: fadeUp 0.6s cubic-bezier(0.2, 0.8, 0.3, 1) 0.32s both; }
+
+/* تكبير الصورة/الرسم داخل البطاقات عند المرور */
+.topic-img, .topic-art { transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.3, 1); }
+.card:hover .topic-img, .card:focus-visible .topic-img,
+.card:hover .topic-art, .card:focus-visible .topic-art,
+.pop:hover .topic-img, .pop:focus-visible .topic-img,
+.pop:hover .topic-art, .pop:focus-visible .topic-art { transform: scale(1.08); }
+/* قصّ التكبير داخل حدود الصورة المستديرة */
+.topic-img-card, .topic-art-card, .topic-img-hero, .topic-art-hero { overflow: hidden; }
+
+/* رفع البطاقة وظلّها عند المرور */
+.card { box-shadow: 0 1px 2px rgba(12, 43, 35, 0.03); }
+.card:hover, .card:focus-visible { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(12, 43, 35, 0.12); }
+
+/* تفاعل بطاقات الإحصاء */
+.stat { transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease; }
+.stat:hover { transform: translateY(-2px); border-color: rgba(67, 197, 158, 0.45); background: rgba(255, 255, 255, 0.08); }
+
+/* حركة رقيقة على الأيقونة داخل رأس القسم */
+.eyebrow-ic { transition: transform 0.3s ease; }
+.eyebrow:hover .eyebrow-ic { transform: scale(1.18) rotate(-6deg); }
+
+/* نبض لطيف للشارة «الأكثر شيوعاً» */
+.chip.hot { transition: transform 0.18s ease; }
+.pop:hover .k, .card:hover .chip.hot { transform: translateY(-1px); }
+
 @media (max-width: 560px) {
   .brand h1 { font-size: 24px; }
   .form-grid { grid-template-columns: 1fr; }

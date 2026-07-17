@@ -54,6 +54,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             موضوع. القوانين تتغير — اعتمد دائماً على رابط المصدر للتفاصيل النهائية.
             <br />
             معلومات عامة فقط، وليست استشارة قانونية، ولا تنشئ علاقة محامٍ بموكّل.
+            <br />
+            صور الفئات من{' '}
+            <a href="https://commons.wikimedia.org" target="_blank" rel="noopener noreferrer">
+              Wikimedia Commons
+            </a>{' '}
+            برخص حرة — التفاصيل في <span className="mono">content/IMAGE_CREDITS.md</span>.
           </div>
         </footer>
       </body>

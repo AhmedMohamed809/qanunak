@@ -20,10 +20,12 @@ Copy `.env.example` to `.env` and set `ADMIN_PASSWORD` + a long random `ADMIN_SE
 - `src/lib/auth.ts` + `middleware.ts` — admin session (HMAC cookie)
 - `src/app/law/[id]` — server-rendered article pages (SEO + Article JSON-LD)
 - `src/app/admin` — dashboard, editor at `/admin/edit/[id]` (`new` = create)
-- `src/components/TopicArt.tsx` — original SVG artwork. Priority: admin `image`
-  URL → per-article drawing (`ART_BY_ARTICLE`, 32 of them) → category drawing
-  (`ART_BY_CAT`, the fallback for any new topic). All art is original — never
-  add third-party images without a licence.
+- `src/components/TopicArt.tsx` — topic imagery (client component). Priority:
+  admin `image` URL → real category photo (`CATEGORY_IMAGE`, Wikimedia Commons
+  via `Special:FilePath`) → on load error, falls back to original SVG artwork
+  (`ART_BY_ARTICLE` per-topic, then `ART_BY_CAT` per-category). Category photos
+  are free/openly licensed; attribution in `content/IMAGE_CREDITS.md`. The SVG
+  art is original — any external image must be free-licensed and credited there.
 
 ## Hard rules — do not break
 1. **Every article must cite an official source.** The admin API rejects any
