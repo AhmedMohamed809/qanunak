@@ -224,7 +224,9 @@ ul { padding-inline-start: 22px; }
   padding: 11px 24px; font: 500 14.5px/1.5 'Tajawal', sans-serif; cursor: pointer; color: var(--ink);
   display: flex; align-items: center; gap: 8px; transition: border-color 0.15s, background 0.15s, color 0.15s, transform 0.15s;
 }
-.vbtn:hover { border-color: var(--sign); }
+.vbtn:hover:not(:disabled) { border-color: var(--sign); }
+.vbtn:disabled { cursor: default; }
+.vbtn:disabled:not(.on-up):not(.on-down) { opacity: 0.5; }
 .vbtn.on-up { background: var(--sign-soft); border-color: var(--sign); color: var(--sign-deep); }
 .vbtn.on-down { background: #fdf2f0; border-color: var(--alert); color: var(--alert); }
 .vbtn:active { transform: scale(0.96); }

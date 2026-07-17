@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { getArticle, getContent, getFeedback } from '@/lib/store';
+import { getArticle, getContent, getArticleFeedback } from '@/lib/store';
 import TopicArt from '@/components/TopicArt';
 import VoteButtons from '@/components/VoteButtons';
 
@@ -14,15 +14,14 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 }
 
 export default async function ArticlePage({ params }: { params: { id: string } }) {
-  const [a, content, feedback] = await Promise.all([
+  const [a, content, counts] = await Promise.all([
     getArticle(params.id),
     getContent(),
-    getFeedback(),
+    getArticleFeedback(params.id),
   ]);
   if (!a) notFound();
 
   const catName = content.categories.find((c) => c.id === a.cat)?.name ?? a.cat;
-  const counts = feedback[a.id] ?? { up: 0, down: 0 };
 
   const jsonLd = {
     '@context': 'https://schema.org',

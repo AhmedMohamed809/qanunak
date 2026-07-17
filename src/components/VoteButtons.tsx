@@ -23,27 +23,20 @@ export default function VoteButtons({ articleId, initial }: { articleId: string;
   useEffect(() => { setMine(getLocal()[articleId] ?? null); }, [articleId]);
 
   async function vote(v: Vote) {
-    if (busy) return;
-    setBusy(true);
-    const prev = mine;
-    const next: Vote | null = prev === v ? null : v;
+    if (busy || mine) return; // تصويت لمرّة واحدة فقط
 
     // تحديث فوري في الواجهة
-    setMine(next);
-    setPulse(next);
-    setCounts((c) => {
-      const n = { ...c };
-      if (prev) n[prev] = Math.max(0, n[prev] - 1);
-      if (next) n[next] += 1;
-      return n;
-    });
-    setLocal(articleId, next);
+    setBusy(true);
+    setMine(v);
+    setPulse(v);
+    setCounts((c) => ({ ...c, [v]: c[v] + 1 }));
+    setLocal(articleId, v);
 
     try {
       const res = await fetch('/api/feedback', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: articleId, vote: next, prev }),
+        body: JSON.stringify({ id: articleId, vote: v, prev: null }),
       });
       if (res.ok) {
         const data = (await res.json()) as { counts: FeedbackCounts };
@@ -64,6 +57,7 @@ export default function VoteButtons({ articleId, initial }: { articleId: string;
         <button
           className={`vbtn ${mine === 'up' ? 'on-up' : ''} ${pulse === 'up' ? 'pulse' : ''}`}
           aria-pressed={mine === 'up'}
+          disabled={busy || mine !== null}
           onClick={() => vote('up')}
         >
           👍 نعم، أفادتني <span className="mono">{counts.up}</span>
@@ -71,13 +65,14 @@ export default function VoteButtons({ articleId, initial }: { articleId: string;
         <button
           className={`vbtn ${mine === 'down' ? 'on-down' : ''} ${pulse === 'down' ? 'pulse' : ''}`}
           aria-pressed={mine === 'down'}
+          disabled={busy || mine !== null}
           onClick={() => vote('down')}
         >
           👎 لم تفدني <span className="mono">{counts.down}</span>
         </button>
       </div>
       <p className="vote-note">
-        {mine ? 'شكراً لك — سُجِّل تقييمك.' : 'تقييمك يساعدنا على معرفة المواضيع الأكثر فائدة.'}
+        {mine ? 'شكراً لك — سُجِّل تقييمك، ويظهر ضمن العدّاد أعلى الصفحة الرئيسية.' : 'تقييمك يساعدنا على معرفة المواضيع الأكثر فائدة.'}
       </p>
     </div>
   );

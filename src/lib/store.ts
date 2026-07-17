@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs';
 import path from 'path';
-import type { Article, ContentFile, FeedbackFile, Vote } from './types';
+import type { Article, ContentFile, FeedbackCounts, FeedbackFile, Vote } from './types';
 
 /**
  * مخزن البيانات: ملفات JSON على القرص.
@@ -34,6 +34,37 @@ async function kv(cmd: (string | number)[]): Promise<unknown> {
   if (!res.ok) throw new Error(`KV ${res.status}`);
   return ((await res.json()) as { result: unknown }).result;
 }
+
+/**
+ * بديل بلا أي إعداد على Vercel: عدّاد مجاني عام (Abacus) لا يتطلّب تسجيلاً.
+ * يُستعمل تلقائياً على Vercel عند غياب KV، فتعمل «قالوا أفادتني» فوراً دون خطوات منك.
+ * لا يُرسَل سوى معرّف الموضوع المجهول + زيادة/قراءة عدّاد — بلا أي بيانات شخصية.
+ * القيمة تُحفظ بشكل دائم. (للخصوصية/التحكّم الكامل يمكن لاحقاً ربط Vercel KV فيُقدَّم عليه.)
+ */
+const USE_ABACUS = !USE_KV && Boolean(process.env.VERCEL);
+const AB_BASE = 'https://abacus.jasoncameron.dev';
+const AB_NS = 'qanunak-uk-law-ar';
+const AB_TOTAL = 'helped-total';
+const abKey = (id: string, kind: Vote) => `${kind}-${id}`;
+
+async function abFetch(pathname: string): Promise<number> {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 3500);
+  try {
+    const res = await fetch(`${AB_BASE}${pathname}`, { cache: 'no-store', signal: ctrl.signal });
+    if (res.status === 404) return 0; // مفتاح لم يُنشأ بعد
+    if (!res.ok) throw new Error(`Abacus ${res.status}`);
+    const data = (await res.json()) as { value?: number };
+    return Math.max(0, Number(data.value) || 0);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+const abHit = (key: string) => abFetch(`/hit/${AB_NS}/${key}`); // +1 (يُنشئ عند أول استدعاء)
+const abGet = (key: string) => abFetch(`/get/${AB_NS}/${key}`); // القيمة الحالية
+
+// تخزين مؤقّت قصير لإجمالي «أفادتني» على الصفحة الرئيسية (يخفّف طلبات Abacus)
+let totalCache: { at: number; val: number } | null = null;
 
 // قفل بسيط داخل العملية لتفادي الكتابة المتزامنة
 let writing: Promise<void> = Promise.resolve();
@@ -102,12 +133,68 @@ export async function getFeedback(): Promise<FeedbackFile> {
       console.warn('getFeedback: تعذّرت قراءة KV، الرجوع إلى الملف', err);
     }
   }
+  // مع Abacus لا نجلب كل العدّادات دفعةً واحدة (طلب لكل موضوع مكلف)؛
+  // الصفحة الرئيسية تستخدم getTotalHelped، وصفحة المقال تستخدم getArticleFeedback.
+  if (USE_ABACUS) return {};
   try {
     const raw = await fs.readFile(FEEDBACK, 'utf8');
     return JSON.parse(raw) as FeedbackFile;
   } catch {
     return {};
   }
+}
+
+/** إجمالي عدد من ضغطوا «أفادتني» عبر كل المواضيع (لإحصاء الصفحة الرئيسية). */
+export async function getTotalHelped(): Promise<number> {
+  if (USE_KV) {
+    try {
+      const flat = ((await kv(['HGETALL', FB_KEY])) as string[]) ?? [];
+      let total = 0;
+      for (let i = 0; i + 1 < flat.length; i += 2) {
+        if (flat[i].endsWith(':up')) total += Math.max(0, parseInt(flat[i + 1], 10) || 0);
+      }
+      return total;
+    } catch (err) {
+      console.warn('getTotalHelped: تعذّرت قراءة KV', err);
+    }
+  }
+  if (USE_ABACUS) {
+    if (totalCache && Date.now() - totalCache.at < 15000) return totalCache.val;
+    try {
+      const val = await abGet(AB_TOTAL);
+      totalCache = { at: Date.now(), val };
+      return val;
+    } catch (err) {
+      console.warn('getTotalHelped: تعذّرت قراءة Abacus', err);
+      return totalCache?.val ?? 0;
+    }
+  }
+  const fb = await getFeedback();
+  return Object.values(fb).reduce((s, f) => s + f.up, 0);
+}
+
+/** عدّادات موضوع واحد (لصفحة المقال). */
+export async function getArticleFeedback(id: string): Promise<FeedbackCounts> {
+  if (USE_KV) {
+    try {
+      const up = Math.max(0, Number(await kv(['HGET', FB_KEY, `${id}:up`])) || 0);
+      const down = Math.max(0, Number(await kv(['HGET', FB_KEY, `${id}:down`])) || 0);
+      return { up, down };
+    } catch (err) {
+      console.warn('getArticleFeedback: تعذّرت قراءة KV', err);
+    }
+  }
+  if (USE_ABACUS) {
+    try {
+      const [up, down] = await Promise.all([abGet(abKey(id, 'up')), abGet(abKey(id, 'down'))]);
+      return { up, down };
+    } catch (err) {
+      console.warn('getArticleFeedback: تعذّرت قراءة Abacus', err);
+      return { up: 0, down: 0 };
+    }
+  }
+  const fb = await getFeedback();
+  return fb[id] ?? { up: 0, down: 0 };
 }
 
 /** تسجيل تقييم: vote الجديد، وprev إن كان الزائر يبدّل تقييماً سابقاً أو يلغيه */
@@ -129,6 +216,22 @@ export async function recordVote(
       return { [articleId]: { up, down } };
     } catch (err) {
       console.warn('recordVote: تعذّرت الكتابة إلى KV، الرجوع إلى الملف', err);
+    }
+  }
+  // المسار المجاني بلا إعداد على Vercel: زيادة عدّاد Abacus (تصويت لمرّة واحدة، بلا إنقاص)
+  if (USE_ABACUS) {
+    try {
+      if (vote === 'up' && prev !== 'up') {
+        await Promise.all([abHit(abKey(articleId, 'up')), abHit(AB_TOTAL)]);
+        totalCache = null; // أبطِل التخزين المؤقّت ليعكس الإجمالي الزيادة فوراً
+      } else if (vote === 'down' && prev !== 'down') {
+        await abHit(abKey(articleId, 'down'));
+      }
+      const [up, down] = await Promise.all([abGet(abKey(articleId, 'up')), abGet(abKey(articleId, 'down'))]);
+      return { [articleId]: { up, down } };
+    } catch (err) {
+      console.warn('recordVote: تعذّرت الكتابة إلى Abacus', err);
+      return { [articleId]: { up: 0, down: 0 } };
     }
   }
   return serialize(async () => {
