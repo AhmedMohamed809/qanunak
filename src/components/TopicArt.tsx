@@ -1,13 +1,17 @@
+'use client';
+
+import { useState } from 'react';
+
 /**
  * صور المواضيع.
  *
  * الأولوية:
  *  1) صورة يضبطها الأدمن برابط (حقل image) — تُعرض كما هي.
- *  2) رسم خاص بالموضوع نفسه (ART_BY_ARTICLE).
- *  3) رسم الفئة (ART_BY_CAT) — احتياطي لأي موضوع جديد يضيفه الأدمن.
+ *  2) صورة حقيقية للفئة من Wikimedia Commons (CATEGORY_IMAGE) — برخصة حرة.
+ *  3) عند تعذّر تحميل الصورة: رسم أصلي احتياطي (SVG) خاص بالموضوع أو بالفئة.
  *
- * كل الرسوم أصلية بأسلوب لوحات الإشارة البريطانية (هوية الموقع)،
- * ولا تعتمد على صور خارجية أو حقوق طرف ثالث.
+ * الرسوم الاحتياطية أصلية بأسلوب لوحات الإشارة البريطانية (هوية الموقع)،
+ * وصور الفئات مصدرها Wikimedia Commons (انظر content/IMAGE_CREDITS.md).
  */
 
 const W = '#fff';
@@ -331,6 +335,32 @@ const ART_BY_CAT: Record<string, JSX.Element> = {
       <rect x="24" y="38" width="16" height="3" rx="1.5" fill={G} />
     </g>
   ),
+  asylum: (
+    <g>
+      <path d="M32 14 L46 20 V32 C46 42 40 47 32 50 C24 47 18 42 18 32 V20 Z" fill={W} />
+      <path d="M32 41 c-6.5 -4.5 -9.5 -8.5 -9.5 -12.5 a4.7 4.7 0 0 1 9.5 -2.6 a4.7 4.7 0 0 1 9.5 2.6 c0 4 -3 8 -9.5 12.5 z" fill={G} />
+    </g>
+  ),
+};
+
+/* ---------- صور حقيقية لكل فئة (Wikimedia Commons، رخص حرة) ----------
+ * الرابط ثابت عبر Special:FilePath؛ وعند تعذّر التحميل نرجع تلقائياً للرسم الاحتياطي.
+ * الإسناد الكامل في content/IMAGE_CREDITS.md */
+const commons = (file: string) =>
+  `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(file)}?width=400`;
+
+const CATEGORY_IMAGE: Record<string, string> = {
+  driving: commons('London 01 2013 traffic jam 5601.JPG'),
+  work: commons('Working in open office space (Unsplash).jpg'),
+  housing: commons('Terraced housing in Lime Street, Wolverhampton - geograph.org.uk - 1735257.jpg'),
+  family: commons('Couple walking in park (1).jpg'),
+  child: commons('Children at school (8720604364).jpg'),
+  health: commons('Doctors stethoscope 1.jpg'),
+  money: commons('British Empire, sovereign pound, 1816- (3542773257).jpg'),
+  police: commons('Line of police officers -London, England-29April2011 (1).jpg'),
+  daily: commons('High Street shops, Uckfield - geograph.org.uk - 4142097.jpg'),
+  status: commons('British Passport (UK) Series C - Cover.jpg'),
+  asylum: commons('Refugees-welcome-2337656.jpg'),
 };
 
 export default function TopicArt({
@@ -346,11 +376,23 @@ export default function TopicArt({
   title: string;
   size?: 'card' | 'hero';
 }) {
-  if (image) {
-    // صورة يضبطها الأدمن برابط
+  const [failed, setFailed] = useState(false);
+  // الأولوية: صورة الأدمن ← صورة الفئة الحقيقية ← (عند الفشل) الرسم الاحتياطي
+  const src = image || CATEGORY_IMAGE[cat] || null;
+
+  if (src && !failed) {
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={image} alt={title} className={`topic-img topic-img-${size}`} loading="lazy" />;
+    return (
+      <img
+        src={src}
+        alt={title}
+        className={`topic-img topic-img-${size}`}
+        loading="lazy"
+        onError={() => setFailed(true)}
+      />
+    );
   }
+
   const art = ART_BY_ARTICLE[id] ?? ART_BY_CAT[cat] ?? ART_BY_CAT.daily;
   return (
     <svg viewBox="0 0 64 64" className={`topic-art topic-art-${size}`} role="img" aria-label={title}>
