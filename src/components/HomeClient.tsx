@@ -67,9 +67,17 @@ function CountUp({ target }: { target: number }) {
   return <b>{n}</b>;
 }
 
-export default function HomeClient({ content, feedback }: { content: ContentFile; feedback: FeedbackFile }) {
+export default function HomeClient({
+  content,
+  feedback,
+  initialQ = '',
+}: {
+  content: ContentFile;
+  feedback: FeedbackFile;
+  initialQ?: string;
+}) {
   const { categories, articles } = content;
-  const [q, setQ] = useState('');
+  const [q, setQ] = useState(initialQ);
   const [cat, setCat] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -108,29 +116,40 @@ export default function HomeClient({ content, feedback }: { content: ContentFile
   return (
     <>
       <div className="wrap">
-        <div className="stats" style={{ marginTop: 22 }}>
-          <div className="stat">
-            <span className="stat-ic">{Icons.topics}</span>
-            <div><CountUp target={articles.length} /><span>موضوعاً</span></div>
+        <section className="hero">
+          <h1 className="hero-title">
+            اعرف <span className="accent">حقوقك</span> في بريطانيا — بالعربية، ببساطة
+          </h1>
+          <p className="tag">
+            القوانين البريطانية مشروحة بالعربية بطريقة بسيطة، ومع كل موضوع رابط المصدر الرسمي من
+            مواقع الحكومة البريطانية وتاريخ آخر مراجعة.
+          </p>
+
+          <div className="stats">
+            <div className="stat">
+              <span className="stat-ic">{Icons.topics}</span>
+              <div><CountUp target={articles.length} /><span>موضوعاً</span></div>
+            </div>
+            <div className="stat">
+              <span className="stat-ic">{Icons.categories}</span>
+              <div><CountUp target={categories.length} /><span>فئات</span></div>
+            </div>
+            <div className="stat">
+              <span className="stat-ic">{Icons.helped}</span>
+              <div><CountUp target={totalHelped} /><span>قالوا «أفادتني»</span></div>
+            </div>
           </div>
-          <div className="stat">
-            <span className="stat-ic">{Icons.categories}</span>
-            <div><CountUp target={categories.length} /><span>فئات</span></div>
+
+          <div className="search">
+            <input
+              type="search"
+              value={q}
+              onChange={(e) => { setQ(e.target.value); setCat(null); }}
+              placeholder="ابحث… مثال: رخصة قيادة، إيجار، لجوء، Universal Credit"
+              aria-label="بحث في المواضيع"
+            />
           </div>
-          <div className="stat">
-            <span className="stat-ic">{Icons.helped}</span>
-            <div><CountUp target={totalHelped} /><span>قالوا «أفادتني»</span></div>
-          </div>
-        </div>
-        <div className="search" style={{ marginTop: 18 }}>
-          <input
-            type="search"
-            value={q}
-            onChange={(e) => { setQ(e.target.value); setCat(null); }}
-            placeholder="ابحث… مثال: رخصة قيادة، إيجار، مدرسة، ضمان"
-            aria-label="بحث في المواضيع"
-          />
-        </div>
+        </section>
 
         <section>
           <div className="eyebrow"><span className="eyebrow-ic">{Icons.hot}</span>الأكثر شيوعاً / Most asked</div>
@@ -147,7 +166,7 @@ export default function HomeClient({ content, feedback }: { content: ContentFile
           </div>
         </section>
 
-        <section>
+        <section id="cats">
           <div className="eyebrow"><span className="eyebrow-ic">{Icons.grid}</span>الفئات / Categories</div>
           <div className="cats">
             {categories.map((c) => {
@@ -166,7 +185,7 @@ export default function HomeClient({ content, feedback }: { content: ContentFile
           </div>
         </section>
 
-        <section>
+        <section id="results">
           <div className="eyebrow">
             <span className="eyebrow-ic">{cat ? Icons.grid : q ? Icons.search : Icons.list}</span>
             {cat ? catName(cat) : q ? 'نتائج البحث' : 'كل المواضيع'}
